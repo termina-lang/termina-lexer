@@ -10,15 +10,15 @@ class TerminaLexer(RegexLexer):
     # Categorized language elements
     KEYWORDS = (
         "match", "case", "for", "if", "else",
-        "return", "continue", "while", 
-        "as", "is", "in"
+        "return", "continue", "while", "reboot",
+        "as", "is", "in", "self"
     )
 
     DECLARATIONS = (
         "struct", "enum", "class", "emitter",
         "task", "function", "handler", "resource",
-        "const", "constexpr", "var", "let",
-        "provides", "extends", 
+        "channel", "const", "constexpr", "var", "let",
+        "interface", "provides", "extends",
         "procedure", "viewer", "method", "action",
     )
 
@@ -34,7 +34,7 @@ class TerminaLexer(RegexLexer):
         "box", "loc"
     )
 
-    CONSTANTS = ("true", "false")
+    CONSTANTS = ("true", "false", "null")
 
     tokens = {
         'root': [
@@ -54,14 +54,18 @@ class TerminaLexer(RegexLexer):
             (r'\b0x[0-9a-fA-F]+\b', Number.Hex),
             (r'\b\d+\b', Number.Integer),
 
+            (
+                r'\b(import)(\s+)'
+                r'([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)'  # dotted module path
+                r'(\s*)(;)',
+                bygroups(Keyword.Namespace, Text.Whitespace, Name.Namespace, Text.Whitespace, Punctuation)
+            ),
+
             # Built-in types
             (r'\b(?:' + '|'.join(BUILTIN_TYPES) + r')\b', Keyword.Type),
 
             # Declarations
             (r'\b(?:' + '|'.join(DECLARATIONS) + r')\b', Keyword.Declaration),
-
-            # Imports
-            (r'\b(?:' + '|'.join(IMPORTS) + r')\b', Keyword.Namespace),
 
             # Constants (true, false)
             (r'\b(?:' + '|'.join(CONSTANTS) + r')\b', Keyword.Constant),
@@ -69,12 +73,14 @@ class TerminaLexer(RegexLexer):
             # Keywords
             (r'\b(?:' + '|'.join(KEYWORDS) + r')\b', Keyword),
 
-            # Operators and symbols
-            (r'(\.\.|\&mut|\&priv|->|=>|::|<<|>>|<=|>=|==|!=|&&|\|\||<->|<-)', Operator),
-            (r'[\+\-\*/%<>=\^\|\&!#:\[\]\{\}\(\)\.,;@]', Operator),
+            # Operators & punctuation
+            (r'(\.\.|\&mut|\&priv|->|=>|::|<<|>>|<=|>=|==|!=|&&|\|\||<->|<-|:=|\?)', Operator),
+            (r'[\+\-\*/%<>=\^\|\&!#@]', Operator),
+            (r'[:\[\]\{\}\(\)\.,;]', Punctuation),
 
-            # Identifiers (e.g., variable/function names)
-            (r'[a-zA-Z][a-zA-Z0-9_]*', Name),
+            # Identifiers
+            (r'[A-Z][A-Za-z0-9_]*', Name.Class),
+            (r'[a-z_][A-Za-z0-9_]*', Name)
         ],
 
         'comment': [
@@ -84,4 +90,5 @@ class TerminaLexer(RegexLexer):
             (r'[*/]', Comment.Multiline),
         ]
     }
+
 
