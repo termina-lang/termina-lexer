@@ -29,6 +29,7 @@ class TerminaLexer(RegexLexer):
     BUILTIN_TYPES = (
         "u8", "u16", "u32", "u64",
         "i8", "i16", "i32", "i64",
+        "f32", "f64",
         "usize", "bool", "char", "unit",
         "access", "sink", "out", "triggers", 
         "box", "loc"
@@ -50,7 +51,8 @@ class TerminaLexer(RegexLexer):
             (r"'(\\.|[^'])'", String.Char),
 
             # Numbers
-            (r'\b\d+\.\d+\b', Number.Float),
+            (r'\b\d+\.\d+([eE][-+]?\d+)?\b', Number.Float),
+            (r'\b\d+[eE][-+]?\d+\b', Number.Float),
             (r'\b0x[0-9a-fA-F]+\b', Number.Hex),
             (r'\b\d+\b', Number.Integer),
 
