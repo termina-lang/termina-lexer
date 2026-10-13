@@ -16,7 +16,7 @@ class TerminaLexer(RegexLexer):
 
     DECLARATIONS = (
         "struct", "enum", "class", "emitter",
-        "task", "function", "handler", "resource",
+        "task", "function", "extern", "noreturn", "handler", "resource",
         "channel", "const", "constexpr", "var", "let",
         "interface", "provides", "extends",
         "procedure", "viewer", "method", "action",
